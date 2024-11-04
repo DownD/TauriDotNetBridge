@@ -15,17 +15,18 @@ pnpm create tauri-app
 pnpm i
 ```
 
-In the root of your project, create a folder called ``src-dotnet`` alongside ``src-tauri``.
-Inside ``src-dotnet``, create a .NET class library, e.g.:
+In the root of your project, create a folder called `src-dotnet` alongside `src-tauri`.
+Inside `src-dotnet`, create a .NET class library, e.g.:
 
 ```bash
 cd src-dotnet
 dotnet new classlib --name MyApp.TauriPlugIn
+cd ..
 ```
 
-Make sure the name of your class library ends with ``.TauriPlugIn``.
+Make sure the name of your class library ends with `.TauriPlugIn`.
 
-Add the following PropertyGroup to the ``.csproj`` file:
+Add the following PropertyGroup to the `.csproj` file:
 
 ```xml
 <PropertyGroup>
@@ -35,7 +36,7 @@ Add the following PropertyGroup to the ``.csproj`` file:
 </PropertyGroup>
 ```
 
-Add the ``TauriDotNetBridge`` and ``Microsoft.Extensions.DependencyInjection`` NuGet packages:
+Add the `TauriDotNetBridge` and `Microsoft.Extensions.DependencyInjection` NuGet packages:
 
 ```xml
 <ItemGroup>
@@ -79,14 +80,14 @@ public class HomeController
 
 Build the .NET project to verify the changes and ensure the C# DLLs are copied to the Tauri target folder.
 
-In ``src-tauri/Cargo.toml``, add:
+In `src-tauri/Cargo.toml`, add:
 
 ```yaml
 [dependencies]
 tauri-dotnet-bridge-host = "0.5.0"
 ```
 
-And then configure Tauri in your ``main.rs`` or ``lib.rs`` as follows:
+And then configure Tauri in your `main.rs` or `lib.rs` as follows:
 
 ```rust
 use tauri_dotnet_bridge_host;
@@ -104,7 +105,7 @@ fn main() {
 }
 ```
 
-Run cargo build in ``src-tauri`` to verify the changes.
+Run cargo build in `src-tauri` to verify the changes.
 
 To call call your DotNet controllers in TypeScript, you can use the following code snippet:
 
@@ -132,7 +133,6 @@ export class TauriApi {
     return jsonResponse.data ?? (null as T | null)
   }
 }
-
 ```
 
 And then use use it like this:
@@ -148,12 +148,12 @@ async function login(user: string): Promise<string | null> {
 In plain JavaScript you can call a controller like this:
 
 ```javascript
-  async function login() {
-    const response = await invoke('dotnet_request', {
-      request: JSON.stringify({ controller: 'home', action: 'login', data: { user: name.value, password: '<secret>' } })
-    })
-    greetMsg.value = JSON.parse(response).data
-  }
+async function login() {
+  const response = await invoke('dotnet_request', {
+    request: JSON.stringify({ controller: 'home', action: 'login', data: { user: name.value, password: '<secret>' } })
+  })
+  greetMsg.value = JSON.parse(response).data
+}
 ```
 
 Finally, run the app
@@ -163,6 +163,24 @@ pnpm run tauri dev
 ```
 
 and enjoy coding a tauri-app with DotNet backend 😊
+
+# Packaging
+
+Make sure the dotnet plugin is built in release
+
+```bash
+cd src-dotnet
+dotnet build -c Release
+cd ..
+```
+
+Then build the tauri packages
+
+```bash
+pnpm run tauri build
+```
+
+To redistribute the package you can now copy the generated rust executable and the "dotnet" folder.
 
 # Sample project
 
