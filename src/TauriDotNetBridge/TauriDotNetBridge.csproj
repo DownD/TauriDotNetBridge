@@ -8,8 +8,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IsPackable>true</IsPackable>
     <LangVersion>Latest</LangVersion>
-    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <SuppressDependenciesWhenPacking>false</SuppressDependenciesWhenPacking>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeReferencedProjects>true</IncludeReferencedProjects>
   </PropertyGroup>
 
   <PropertyGroup>
