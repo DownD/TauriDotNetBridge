@@ -29,7 +29,7 @@ Add the following PropertyGroup to the ``.csproj`` file:
 
 ```xml
 <PropertyGroup>
-  <OutputPath>..\..\src-tauri\target\$(Configuration)</OutputPath>
+  <OutputPath>..\..\src-tauri\target\$(Configuration)\dotnet</OutputPath>
   <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 </PropertyGroup>

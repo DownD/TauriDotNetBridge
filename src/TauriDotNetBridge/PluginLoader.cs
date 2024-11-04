@@ -5,35 +5,27 @@ namespace TauriDotNetBridge;
 
 internal class PluginLoader
 {
+    public static string DotNetHome = Path.Combine(Path.GetDirectoryName(typeof(PluginLoader).Assembly.Location), "dotnet");
+
     public void Load(ServiceCollection services)
     {
-        var home = Path.GetDirectoryName(GetType().Assembly.Location);
+        AppDomain.CurrentDomain.AssemblyResolve += AssemblyDependency.AssemblyResolve;
 
-        System.Reflection.Assembly? onGlobalAssemblyResolve(object? sender, ResolveEventArgs args) =>
-            AssemblyDependency.AssemblyResolve(sender, args, home);
-
-        AppDomain.CurrentDomain.AssemblyResolve += onGlobalAssemblyResolve;
-
-        if (!Directory.Exists(home))
+        if (!Directory.Exists(DotNetHome))
         {
-            Console.WriteLine("Plugins directory does not exist");
+            Console.WriteLine("DotNet home directory doesn't exist");
             return;
         }
 
-        var assemblies = Directory.GetFiles(home, "*.TauriPlugIn.dll");
+        var assemblies = Directory.GetFiles(DotNetHome, "*.TauriPlugIn.dll");
 
         foreach (var dllPath in assemblies)
         {
-            ResolveEventHandler? onAssemblyResolve = null;
-
             try
             {
                 var assembly = AppDomain.CurrentDomain.Load(LoadFile(dllPath));
                 var plugInName = assembly.GetName().Name;
 
-                onAssemblyResolve = (object? sender, ResolveEventArgs args) => AssemblyDependency.AssemblyResolve(sender, args, plugInName);
-                AppDomain.CurrentDomain.AssemblyResolve += onAssemblyResolve;
-                
                 Console.WriteLine($"Loading '{Path.GetFileNameWithoutExtension(dllPath)}' ... ");
 
                 foreach (var type in assembly.GetTypes().Where(x => typeof(IPlugIn).IsAssignableFrom(x) && x.IsClass && !x.IsAbstract))
@@ -49,16 +41,9 @@ internal class PluginLoader
             {
                 Console.WriteLine($"Failed to load {Path.GetFileName(dllPath)}: {ex}");
             }
-            finally
-            {
-                if (onAssemblyResolve != null)
-                {
-                    AppDomain.CurrentDomain.AssemblyResolve -= onAssemblyResolve;
-                }
-            }
         }
 
-        AppDomain.CurrentDomain.AssemblyResolve -= onGlobalAssemblyResolve;
+        AppDomain.CurrentDomain.AssemblyResolve -= AssemblyDependency.AssemblyResolve;
     }
 
     private static byte[] LoadFile(string filename)
