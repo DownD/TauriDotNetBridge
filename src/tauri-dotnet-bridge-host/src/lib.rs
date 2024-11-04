@@ -8,11 +8,12 @@ lazy_static! {
         let hostfxr = nethost::load_hostfxr().unwrap();
 
         let exe_path = env::current_exe().expect("Failed to get the executable path");
-        let exe_dir = exe_path
+        let dotnet_dir = exe_path
             .parent()
+            .join("dotnet")
             .expect("Failed to get the executable directory");
-
-        env::set_current_dir(&exe_dir).expect("Failed to set current directory");
+        
+        env::set_current_dir(&dotnet_dir).expect("Failed to set current directory");
 
         let context = hostfxr
             .initialize_for_runtime_config(pdcstr!("TauriDotNetBridge.runtimeconfig.json"))
