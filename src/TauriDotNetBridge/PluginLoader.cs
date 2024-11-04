@@ -14,15 +14,13 @@ internal class PluginLoader
 
         AppDomain.CurrentDomain.AssemblyResolve += onGlobalAssemblyResolve;
 
-        var pluginsDirectory = Path.Combine(home, "plugins");
-
-        if (!Directory.Exists(pluginsDirectory))
+        if (!Directory.Exists(home))
         {
             Console.WriteLine("Plugins directory does not exist");
             return;
         }
 
-        var assemblies = Directory.GetFiles(pluginsDirectory, "*.plugin.dll");
+        var assemblies = Directory.GetFiles(home, "*.TauriPlugIn.dll");
 
         foreach (var dllPath in assemblies)
         {
