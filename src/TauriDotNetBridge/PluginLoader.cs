@@ -5,7 +5,7 @@ namespace TauriDotNetBridge;
 
 internal class PluginLoader
 {
-    public static string DotNetHome = Path.Combine(Path.GetDirectoryName(typeof(PluginLoader).Assembly.Location), "dotnet");
+    public static string DotNetHome = Path.GetDirectoryName(typeof(PluginLoader).Assembly.Location);
 
     public void Load(ServiceCollection services)
     {
@@ -13,7 +13,7 @@ internal class PluginLoader
 
         if (!Directory.Exists(DotNetHome))
         {
-            Console.WriteLine("DotNet home directory doesn't exist");
+            Console.WriteLine($"DotNet home '{DotNetHome}' doesn't exist");
             return;
         }
 
