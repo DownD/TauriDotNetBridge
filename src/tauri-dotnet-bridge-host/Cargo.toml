@@ -1,0 +1,12 @@
+[package]
+name = "tauri-dotnet-bridge-host"
+version = "0.1.0"
+edition = "2021"
+authors = ["mail@plainionist.net"]
+description = "A bridge for processing requests using .NET assemblies in a Tauri apps"
+license = "BSD-3"
+repository = "https://github.com/plainionist/TauriDotNetBridge"
+
+[dependencies]
+netcorehost = "0.17.0"
+lazy_static = "1.4"
