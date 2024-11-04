@@ -29,8 +29,8 @@ lazy_static! {
         )
         .expect("Failed to convert DLL path to PdCString");
 
-        println!("Using TauriDotNetBridge.runtimeconfig.json: {:?}", runtime_config_path);
-        println!("Using TauriDotNetBridge.dll: {:?}", dll_path);
+        println!("Using TauriDotNetBridge.runtimeconfig.json: {:?}", runtime_config_path.to_string_lossy());
+        println!("Using TauriDotNetBridge.dll: {:?}", dll_path.to_string_lossy());
 
         let context = hostfxr
             .initialize_for_runtime_config(&runtime_config_path)
