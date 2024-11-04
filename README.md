@@ -6,3 +6,4 @@ Inspired by: https://github.com/RubenPX/TauriNET
 
 # Getting Started
 
+see https://github.com/plainionist/TauriDotNetBridge

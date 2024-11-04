@@ -10,22 +10,18 @@
     <LangVersion>Latest</LangVersion>
     <SuppressDependenciesWhenPacking>false</SuppressDependenciesWhenPacking>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <IncludeReferencedProjects>true</IncludeReferencedProjects>
   </PropertyGroup>
 
   <PropertyGroup>
     <PackageId>TauriDotNetBridge</PackageId>
-    <PackageVersion>1.0.0.0</PackageVersion>
-    <Version>1.0.0</Version>
+    <PackageVersion>1.1.0.0</PackageVersion>
+    <Version>1.1.0</Version>
     <Authors>plainionist</Authors>
     <Description>Enables implementation of Tauri commands in DotNet</Description>
     <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/plainionist/TauriDotNetBridge</RepositoryUrl>
     <PackageTags>Tauri</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-
-    <DevelopmentDependency>true</DevelopmentDependency>
-    <NoPackageAnalysis>true</NoPackageAnalysis>
   </PropertyGroup>
 
   <ItemGroup>
