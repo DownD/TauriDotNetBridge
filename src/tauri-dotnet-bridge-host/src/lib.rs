@@ -13,14 +13,18 @@ lazy_static! {
             .expect("Failed to get the executable directory")
             .join("dotnet");
         
-        env::set_current_dir(&dotnet_dir).expect("Failed to set current directory");
+        let runtime_config_path = dotnet_dir.join("TauriDotNetBridge.runtimeconfig.json");
+        let dll_path = dotnet_dir.join("TauriDotNetBridge.dll");
 
+        println!("Using TauriDotNetBridge.runtimeconfig.json: {:?}", runtime_config_path);
+        println!("Using TauriDotNetBridge.dll: {:?}", dll_path);
+    
         let context = hostfxr
-            .initialize_for_runtime_config(pdcstr!("TauriDotNetBridge.runtimeconfig.json"))
+            .initialize_for_runtime_config(runtime_config_path.as_path())
             .expect("Invalid runtime configuration");
 
         context
-            .get_delegate_loader_for_assembly(pdcstr!("TauriDotNetBridge.dll"))
+            .get_delegate_loader_for_assembly(dll_path.as_path())
             .expect("Failed to load DLL")
     };
 }
