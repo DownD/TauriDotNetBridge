@@ -1,0 +1,8 @@
+<Project>
+  <Target Name="CopyRuntimeConfigToOutput" AfterTargets="Build">
+    <ItemGroup>
+      <RuntimeConfigFile Include="$(MSBuildThisFileDirectory)../lib/$(TargetFramework)/TauriDotNetBridge.runtimeconfig.json" />
+    </ItemGroup>
+    <Copy SourceFiles="@(RuntimeConfigFile)" DestinationFolder="$(OutputPath)" Condition="Exists('@(RuntimeConfigFile)')" />
+  </Target>
+</Project>

@@ -14,8 +14,8 @@
 
   <PropertyGroup>
     <PackageId>TauriDotNetBridge</PackageId>
-    <PackageVersion>1.3.0.0</PackageVersion>
-    <Version>1.3.0</Version>
+    <PackageVersion>1.5.0.0</PackageVersion>
+    <Version>1.5.0</Version>
     <Authors>plainionist</Authors>
     <Description>Enables implementation of Tauri commands in DotNet</Description>
     <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
@@ -25,23 +25,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="$(OutputPath)\TauriDotNetBridge.runtimeconfig.json">
-      <Pack>true</Pack>
-      <PackagePath>contentFiles\any\$(TargetFramework)\</PackagePath>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <BuildAction>Content</BuildAction>
-    </Content>
+    <None Include="../../README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
-    <None Include="../../README.md" Pack="true" PackagePath="\"/>
+  <ItemGroup>
+    <None Include="TauriDotNetBridge.targets" Pack="true" PackagePath="build/" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\TauriDotNetBridge.Contracts\TauriDotNetBridge.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

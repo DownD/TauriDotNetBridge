@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{25BBD0A6-050F-472E-BBC5-650A5FB726E4}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FF31BFEE-0DF6-450A-89AF-5F12919C3297}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TauriDotNetBridge", "src\TauriDotNetBridge\TauriDotNetBridge.csproj", "{2433D4AF-2811-425D-915A-8D08C596F5E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TauriDotNetBridge", "src\TauriDotNetBridge\TauriDotNetBridge.csproj", "{0CC0C32C-1CFC-4804-B1D2-088A2E62B1C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,18 +13,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2433D4AF-2811-425D-915A-8D08C596F5E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2433D4AF-2811-425D-915A-8D08C596F5E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2433D4AF-2811-425D-915A-8D08C596F5E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2433D4AF-2811-425D-915A-8D08C596F5E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CC0C32C-1CFC-4804-B1D2-088A2E62B1C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CC0C32C-1CFC-4804-B1D2-088A2E62B1C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CC0C32C-1CFC-4804-B1D2-088A2E62B1C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CC0C32C-1CFC-4804-B1D2-088A2E62B1C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{2433D4AF-2811-425D-915A-8D08C596F5E6} = {25BBD0A6-050F-472E-BBC5-650A5FB726E4}
+		{0CC0C32C-1CFC-4804-B1D2-088A2E62B1C7} = {FF31BFEE-0DF6-450A-89AF-5F12919C3297}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {A871A715-2628-4FD0-BD85-65B15D3420FE}
+		SolutionGuid = {0C571EAA-9CF0-409F-8C54-FCFDDB32308E}
 	EndGlobalSection
 EndGlobal
