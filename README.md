@@ -164,3 +164,6 @@ pnpm run tauri dev
 
 and enjoy coding a tauri-app with DotNet backend 😊
 
+# Sample project
+
+A sample project can be found here: https://github.com/plainionist/TauriNET
