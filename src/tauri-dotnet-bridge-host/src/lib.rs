@@ -10,8 +10,8 @@ lazy_static! {
         let exe_path = env::current_exe().expect("Failed to get the executable path");
         let dotnet_dir = exe_path
             .parent()
-            .join("dotnet")
-            .expect("Failed to get the executable directory");
+            .expect("Failed to get the executable directory")
+            .join("dotnet");
         
         env::set_current_dir(&dotnet_dir).expect("Failed to set current directory");
 
