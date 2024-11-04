@@ -1,6 +1,6 @@
 [package]
 name = "tauri-dotnet-bridge-host"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = ["mail@plainionist.net"]
 description = "A bridge for processing requests using .NET assemblies in a Tauri apps"
