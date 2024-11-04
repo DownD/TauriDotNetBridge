@@ -20,7 +20,7 @@
     <Authors>plainionist</Authors>
     <Description>Enables implementation of Tauri commands in DotNet</Description>
     <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/plainionist/GuardCop.Analyzers</RepositoryUrl>
+    <RepositoryUrl>https://github.com/plainionist/TauriDotNetBridge</RepositoryUrl>
     <PackageTags>Tauri</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
 
