@@ -1,6 +1,7 @@
 use lazy_static::lazy_static;
-use netcorehost::{hostfxr::AssemblyDelegateLoader, nethost, pdcstring::PdCString};
+use netcorehost::{hostfxr::AssemblyDelegateLoader, nethost, pdcstr, pdcstring::PdCString};
 use std::env;
+use std::ffi::{c_char, CString};
 
 lazy_static! {
     static ref ASM: AssemblyDelegateLoader = {
@@ -39,4 +40,21 @@ lazy_static! {
             .get_delegate_loader_for_assembly(dll_path)
             .expect("Failed to load DLL")
     };
+}
+
+pub fn process_request(request: &str) -> String {
+    let instance = &ASM;
+
+    let process_request = instance
+        .get_function_with_unmanaged_callers_only::<fn(text_ptr: *const u8, text_length: i32) -> *mut c_char>(
+            pdcstr!("TauriDotNetBridge.Bridge, TauriDotNetBridge"),
+            pdcstr!("ProcessRequest"),
+        )
+        .unwrap();
+
+    let response_ptr = process_request(request.as_ptr(), request.len() as i32);
+
+    let response = unsafe { CString::from_raw(response_ptr) };
+
+    format!("{}", response.to_string_lossy())
 }
