@@ -2,7 +2,9 @@
 
 Enables implementation of Tauri commands in DotNet
 
-Inspired by: https://github.com/RubenPX/TauriNET
+[![NuGet](https://img.shields.io/nuget/v/TauriDotNetBridge.svg?label=NuGet)](https://www.nuget.org/packages/TauriDotNetBridge/)
+
+[![crates.io](https://img.shields.io/crates/v/tauri-dotnet-bridge-host.svg?label=crates.io)](https://crates.io/crates/tauri-dotnet-bridge-host)
 
 # Getting Started
 
@@ -185,3 +187,7 @@ To redistribute the package you can now copy the generated rust executable and t
 # Sample project
 
 A sample project can be found here: https://github.com/plainionist/TauriNET
+
+# Credits
+
+Inspired by: https://github.com/RubenPX/TauriNET
