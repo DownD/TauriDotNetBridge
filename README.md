@@ -3,7 +3,6 @@
 Enables implementation of Tauri commands in DotNet
 
 [![NuGet](https://img.shields.io/nuget/v/TauriDotNetBridge.svg?label=NuGet)](https://www.nuget.org/packages/TauriDotNetBridge/)
-
 [![crates.io](https://img.shields.io/crates/v/tauri-dotnet-bridge-host.svg?label=crates.io)](https://crates.io/crates/tauri-dotnet-bridge-host)
 
 # Getting Started
