@@ -31,7 +31,7 @@ public class ActionInvoker
 
         if (type == null)
         {
-            Console.WriteLine("Controller not found.");
+            Console.WriteLine($"No controller found for: '{controller}'");
             return null;
         }
 
@@ -41,14 +41,14 @@ public class ActionInvoker
 
         if (method == null)
         {
-            Console.WriteLine("Method not found.");
+            Console.WriteLine($"No action found for '{action}' in controller '{controller}'");
             return null;
         }
 
         var instance = myServiceProvider.GetService(type);
         if (instance == null)
         {
-            Console.WriteLine("Failed to resolve the service instance.");
+            Console.WriteLine($"Failed to resolve a controller instance for '{type}.{method}'");
             return null;
         }
 
