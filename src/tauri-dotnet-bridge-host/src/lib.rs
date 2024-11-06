@@ -45,7 +45,7 @@ lazy_static! {
             )
             .unwrap();
 
-        set_debug(is_debug);
+        set_debug(is_debug ? 1 : 0);
 
         instance
     };

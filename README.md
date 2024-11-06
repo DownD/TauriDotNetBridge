@@ -84,7 +84,7 @@ In `src-tauri/Cargo.toml`, add:
 
 ```yaml
 [dependencies]
-tauri-dotnet-bridge-host = "0.6.0"
+tauri-dotnet-bridge-host = "0.7.0"
 ```
 
 And then configure Tauri in your `main.rs` or `lib.rs` as follows:
