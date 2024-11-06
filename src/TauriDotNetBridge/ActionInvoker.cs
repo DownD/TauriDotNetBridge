@@ -1,22 +1,25 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TauriDotNetBridge.Contracts;
 
 namespace TauriDotNetBridge;
 
-public class ActionInvoker
+internal class ActionInvoker
 {
     private readonly IServiceCollection myServices;
     private readonly IServiceProvider myServiceProvider;
     private readonly JsonSerializer mySerializer;
+    private readonly ILogger<ActionInvoker> myLogger;
 
     public ActionInvoker(IServiceCollection services, JsonSerializerSettings settings)
     {
         myServices = services;
 
         myServiceProvider = services.BuildServiceProvider();
+        myLogger = myServiceProvider.GetRequiredService<ILogger<ActionInvoker>>();
         mySerializer = JsonSerializer.Create(settings);
     }
 
@@ -31,7 +34,7 @@ public class ActionInvoker
 
         if (type == null)
         {
-            Console.WriteLine($"No controller found for: '{controller}'");
+            myLogger.LogWarning($"No controller found for: '{controller}'");
             return null;
         }
 
@@ -41,14 +44,14 @@ public class ActionInvoker
 
         if (method == null)
         {
-            Console.WriteLine($"No action found for '{action}' in controller '{controller}'");
+            myLogger.LogWarning($"No action found for '{action}' in controller '{controller}'");
             return null;
         }
 
         var instance = myServiceProvider.GetService(type);
         if (instance == null)
         {
-            Console.WriteLine($"Failed to resolve a controller instance for '{type}.{method}'");
+            myLogger.LogError($"Failed to resolve a controller instance for '{type}.{method}'");
             return null;
         }
 

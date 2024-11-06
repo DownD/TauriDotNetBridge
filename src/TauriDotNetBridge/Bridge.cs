@@ -5,8 +5,15 @@ namespace TauriDotNetBridge;
 
 public static class Bridge
 {
+	private static bool myIsDebug;
+
+	public static void SetDebug(bool isDebug)
+	{
+		myIsDebug = isDebug;
+	}
+
 	[UnmanagedCallersOnly]
-	public static unsafe byte* ProcessRequest(/* byte* */ IntPtr requestPtr, int requestLength)
+	public static unsafe byte* ProcessRequest(IntPtr requestPtr, int requestLength)
 	{
 		var request = Marshal.PtrToStringUTF8(requestPtr, requestLength);
 		if (request == null || request.Length == 0)
@@ -14,7 +21,7 @@ public static class Bridge
 			request = null;
 		}
 
-		var response = Router.RouteRequest(request);
+		var response = Router.Instance(myIsDebug).RouteRequest(request);
 
 		var responseBytes = Encoding.UTF8.GetBytes(response);
 		var responsePtr = Marshal.AllocHGlobal(responseBytes.Length + 1);

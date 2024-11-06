@@ -8,10 +8,7 @@ lazy_static! {
         let hostfxr = nethost::load_hostfxr().unwrap();
 
         let exe_path = env::current_exe().expect("Failed to get the executable path");
-        let dotnet_dir = exe_path
-            .parent()
-            .expect("Failed to get the executable directory")
-            .join("dotnet");
+        let dotnet_dir = exe_path.parent().expect("Failed to get the executable directory").join("dotnet");
 
         let runtime_config_path = PdCString::try_from(
             dotnet_dir
@@ -29,16 +26,28 @@ lazy_static! {
         )
         .expect("Failed to convert DLL path to PdCString");
 
-        println!("Using TauriDotNetBridge.runtimeconfig.json: {:?}", runtime_config_path.to_string_lossy());
-        println!("Using TauriDotNetBridge.dll: {:?}", dll_path.to_string_lossy());
+        let is_debug = cfg!(debug_assertions);
+        if is_debug {
+            println!("Using TauriDotNetBridge.runtimeconfig.json: {:?}", runtime_config_path.to_string_lossy());
+            println!("Using TauriDotNetBridge.dll: {:?}", dll_path.to_string_lossy());
+        }
 
         let context = hostfxr
             .initialize_for_runtime_config(&runtime_config_path)
             .expect("Invalid runtime configuration");
 
-        context
-            .get_delegate_loader_for_assembly(dll_path)
-            .expect("Failed to load DLL")
+        let instance = context.get_delegate_loader_for_assembly(dll_path).expect("Failed to load DLL");
+
+        let set_debug = instance
+            .get_function_with_unmanaged_callers_only::<fn(is_debug: bool)>(
+                pdcstr!("TauriDotNetBridge.Bridge, TauriDotNetBridge"),
+                pdcstr!("SetDebug"),
+            )
+            .unwrap();
+
+        set_debug(is_debug);
+
+        instance
     };
 }
 

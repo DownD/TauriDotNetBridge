@@ -1,21 +1,19 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using TauriDotNetBridge.Contracts;
 
 namespace TauriDotNetBridge;
 
 internal class PluginLoader
 {
-    public static string DotNetHome = Path.GetDirectoryName(typeof(PluginLoader).Assembly.Location);
+    public static string DotNetHome = Path.GetDirectoryName(typeof(PluginLoader).Assembly.Location)!;
 
     public void Load(ServiceCollection services)
     {
-        AppDomain.CurrentDomain.AssemblyResolve += AssemblyDependency.AssemblyResolve;
+        var serviceProvider = services.BuildServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger<PluginLoader>>();
 
-        if (!Directory.Exists(DotNetHome))
-        {
-            Console.WriteLine($"DotNet home '{DotNetHome}' doesn't exist");
-            return;
-        }
+        AppDomain.CurrentDomain.AssemblyResolve += AssemblyDependency.AssemblyResolve;
 
         var assemblies = Directory.GetFiles(DotNetHome, "*.TauriPlugIn.dll");
 
@@ -26,20 +24,20 @@ internal class PluginLoader
                 var assembly = AppDomain.CurrentDomain.Load(LoadFile(dllPath));
                 var plugInName = assembly.GetName().Name;
 
-                Console.WriteLine($"Loading '{Path.GetFileNameWithoutExtension(dllPath)}' ... ");
+                logger.LogDebug($"Loading '{Path.GetFileNameWithoutExtension(dllPath)}' ... ");
 
                 foreach (var type in assembly.GetTypes().Where(x => typeof(IPlugIn).IsAssignableFrom(x) && x.IsClass && !x.IsAbstract))
                 {
                     var instance = (IPlugIn)Activator.CreateInstance(type)!;
 
-                    Console.WriteLine($"  Initializing '{type}' ... ");
+                    logger.LogDebug($"  Initializing '{type}' ... ");
 
                     instance.Initialize(services);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to load {Path.GetFileName(dllPath)}: {ex}");
+                logger.LogError($"Failed to load {Path.GetFileName(dllPath)}: {ex}");
             }
         }
 

@@ -1,6 +1,6 @@
 ﻿namespace TauriDotNetBridge.Contracts;
 
-public class RouteResponse
+internal class RouteResponse
 {
     public string? ErrorMessage { get; set; }
     public object? Data { get; set; }

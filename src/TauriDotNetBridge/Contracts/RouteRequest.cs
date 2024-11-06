@@ -1,8 +1,8 @@
 ﻿namespace TauriDotNetBridge.Contracts;
 
-public class RouteRequest
+internal class RouteRequest
 {
-    public string Controller { get; set; }
-    public string Action { get; set; }
+    public string Controller { get; set; } = "Home";
+    public string Action { get; set; } = "Index";
     public object? Data { get; set; }
 }

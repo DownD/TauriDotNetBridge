@@ -1,14 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using TauriDotNetBridge.Contracts;
 
 namespace TauriDotNetBridge;
 
-public class Router
+internal class Router
 {
-    private static Lazy<Router> myInstance = new Lazy<Router>(() => new Router());
-
     private static readonly JsonSerializerSettings myResponseSettings = new()
     {
         ContractResolver = new CamelCasePropertyNamesContractResolver()
@@ -22,11 +21,27 @@ public class Router
         }
     };
 
+    private static Router? myInstance;
+    private static readonly object myLock = new();
+
     private readonly ActionInvoker myActionInvoker;
 
-    private Router()
+    private Router(bool isDebug)
     {
         var services = new ServiceCollection();
+
+        services.AddLogging(builder =>
+            {
+                builder.AddConsole();
+                if (isDebug)
+                {
+                    builder.SetMinimumLevel(LogLevel.Debug);
+                }
+                else
+                {
+                    builder.SetMinimumLevel(LogLevel.Warning);
+                }
+            });
 
         var loader = new PluginLoader();
         loader.Load(services);
@@ -34,7 +49,19 @@ public class Router
         myActionInvoker = new ActionInvoker(services, myRequestSettings);
     }
 
-    public static string RouteRequest(string? requestText)
+    public static Router Instance(bool isDebug)
+    {
+        if (myInstance != null)
+        {
+            lock (myLock)
+            {
+                myInstance ??= new Router(isDebug);
+            }
+        }
+        return myInstance!;
+    }
+
+    public string RouteRequest(string? requestText)
     {
         if (requestText is null or "")
         {
@@ -57,7 +84,7 @@ public class Router
 
         try
         {
-            var response = myInstance.Value.RouteRequest(request);
+            var response = RouteRequest(request);
             return SerializeResponse(response);
         }
         catch (Exception ex)

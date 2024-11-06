@@ -2,7 +2,7 @@ using System.Reflection;
 
 namespace TauriDotNetBridge;
 
-public class AssemblyDependency
+internal class AssemblyDependency
 {
 	public static Assembly? AssemblyResolve(object sender, ResolveEventArgs args)
 	{
@@ -12,9 +12,7 @@ public class AssemblyDependency
 
 		try
 		{
-			var compatible = AppDomain.CurrentDomain.GetAssemblies().Where(asm => asm.FullName == args.Name).First();
-			//Console.WriteLine($"Requested loaded ASM, returning {compatible.GetName()}");
-			return compatible;
+			return AppDomain.CurrentDomain.GetAssemblies().Where(asm => asm.FullName == args.Name).First();
 		}
 		catch (Exception)
 		{
