@@ -4,14 +4,35 @@ using TauriDotNetBridge.Contracts;
 
 namespace TauriDotNetBridge;
 
-internal class PluginLoader
+internal class Composer
 {
-    public static string DotNetHome = Path.GetDirectoryName(typeof(PluginLoader).Assembly.Location)!;
+    public static string DotNetHome = Path.GetDirectoryName(typeof(Composer).Assembly.Location)!;
 
-    public void Load(ServiceCollection services)
+    public Composer(bool isDebug)
     {
-        var serviceProvider = services.BuildServiceProvider();
-        var logger = serviceProvider.GetRequiredService<ILogger<PluginLoader>>();
+        Services = new ServiceCollection();
+
+        Services.AddLogging(builder =>
+            {
+                builder.AddConsole();
+                if (isDebug)
+                {
+                    builder.SetMinimumLevel(LogLevel.Debug);
+                }
+                else
+                {
+                    builder.SetMinimumLevel(LogLevel.Warning);
+                }
+            });
+    }
+
+    public IServiceCollection Services { get; private set; }
+    public IServiceProvider? ServiceProvider { get; private set; }
+
+    public void Compose()
+    {
+        ServiceProvider = Services.BuildServiceProvider();
+        var logger = ServiceProvider.GetRequiredService<ILogger<Composer>>();
 
         AppDomain.CurrentDomain.AssemblyResolve += AssemblyDependency.AssemblyResolve;
 
@@ -32,7 +53,7 @@ internal class PluginLoader
 
                     logger.LogDebug($"  Initializing '{type}' ... ");
 
-                    instance.Initialize(services);
+                    instance.Initialize(Services);
                 }
             }
             catch (Exception ex)
@@ -42,6 +63,8 @@ internal class PluginLoader
         }
 
         AppDomain.CurrentDomain.AssemblyResolve -= AssemblyDependency.AssemblyResolve;
+
+        ServiceProvider = Services.BuildServiceProvider();
     }
 
     private static byte[] LoadFile(string filename)

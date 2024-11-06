@@ -4,7 +4,7 @@ namespace TauriDotNetBridge;
 
 internal class AssemblyDependency
 {
-	public static Assembly? AssemblyResolve(object sender, ResolveEventArgs args)
+	public static Assembly? AssemblyResolve(object? _, ResolveEventArgs args)
 	{
 		if (args.Name.StartsWith("System")) return null;
 
@@ -18,7 +18,7 @@ internal class AssemblyDependency
 		{
 		}
 
-		string dependencyPath = Path.Combine(PluginLoader.DotNetHome, name);
+		string dependencyPath = Path.Combine(Composer.DotNetHome, name);
 		return Assembly.LoadFile(dependencyPath);
 	}
 }

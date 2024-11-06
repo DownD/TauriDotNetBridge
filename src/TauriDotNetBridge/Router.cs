@@ -1,6 +1,8 @@
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using TauriDotNetBridge.Contracts;
 
@@ -21,44 +23,16 @@ internal class Router
         }
     };
 
-    private static Router? myInstance;
-    private static readonly object myLock = new();
+    private readonly Composer myComposer;
+    private readonly JsonSerializer mySerializer;
+    private readonly ILogger<Router> myLogger;
 
-    private readonly ActionInvoker myActionInvoker;
-
-    private Router(bool isDebug)
+    public Router(Composer composer)
     {
-        var services = new ServiceCollection();
+        myComposer = composer;
 
-        services.AddLogging(builder =>
-            {
-                builder.AddConsole();
-                if (isDebug)
-                {
-                    builder.SetMinimumLevel(LogLevel.Debug);
-                }
-                else
-                {
-                    builder.SetMinimumLevel(LogLevel.Warning);
-                }
-            });
-
-        var loader = new PluginLoader();
-        loader.Load(services);
-
-        myActionInvoker = new ActionInvoker(services, myRequestSettings);
-    }
-
-    public static Router Instance(bool isDebug)
-    {
-        if (myInstance != null)
-        {
-            lock (myLock)
-            {
-                myInstance ??= new Router(isDebug);
-            }
-        }
-        return myInstance!;
+        myLogger = myComposer.ServiceProvider!.GetRequiredService<ILogger<Router>>();
+        mySerializer = JsonSerializer.Create(myRequestSettings);
     }
 
     public string RouteRequest(string? requestText)
@@ -82,10 +56,60 @@ internal class Router
             return Serialize(RouteResponse.Error("Failed to parse request JSON"));
         }
 
-        var response = myActionInvoker.InvokeAction(request.Controller, request.Action, request.Data);
+        var response = RouteRequest(request.Controller, request.Action, request.Data);
         return Serialize(response);
     }
 
     private static string Serialize(RouteResponse response) =>
         JsonConvert.SerializeObject(response, myResponseSettings);
+
+    public RouteResponse RouteRequest(string controller, string action, object? data)
+    {
+        var type = myComposer.Services.FirstOrDefault(x =>
+            (x.ImplementationType?.Name.Equals(controller, StringComparison.OrdinalIgnoreCase) == true ||
+             x.ImplementationType?.Name.Equals(controller + "Controller", StringComparison.OrdinalIgnoreCase) == true) &&
+            x.ImplementationType?.IsClass == true &&
+            x.ImplementationType?.IsAbstract == false)
+            ?.ImplementationType;
+
+        if (type == null)
+        {
+            myLogger.LogWarning($"No controller found for: '{controller}'");
+            return RouteResponse.Error($"No controller found for: '{controller}'");
+        }
+
+        var method = type.GetMethods(BindingFlags.Instance | BindingFlags.Public)
+            .FirstOrDefault(x => x.Name.Equals(action, StringComparison.OrdinalIgnoreCase)
+                                 && x.GetParameters().Length <= 1);
+
+        if (method == null)
+        {
+            myLogger.LogWarning($"No action found for '{action}' in controller '{controller}'");
+            return RouteResponse.Error($"No action found for '{action}' in controller '{controller}'");
+        }
+
+        var instance = myComposer.ServiceProvider!.GetService(type);
+        if (instance == null)
+        {
+            myLogger.LogError($"Failed to resolve a controller instance for '{type}.{method}'");
+            return RouteResponse.Error($"Failed to resolve a controller instance for '{type}.{method}'");
+        }
+
+        try
+        {
+            if (data is null)
+            {
+                return RouteResponse.Ok(method.Invoke(instance, null));
+            }
+            else
+            {
+                var arg = ((JObject)data).ToObject(method.GetParameters().Single().ParameterType, mySerializer);
+                return RouteResponse.Ok(method.Invoke(instance, [arg]));
+            }
+        }
+        catch (Exception ex)
+        {
+            return RouteResponse.Error(ex);
+        }
+    }
 }

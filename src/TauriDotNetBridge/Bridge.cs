@@ -6,6 +6,23 @@ namespace TauriDotNetBridge;
 public static class Bridge
 {
 	private static bool myIsDebug;
+	private static Router? myInstance;
+	private static readonly object myLock = new();
+
+	private static Router Instance(bool isDebug)
+	{
+		if (myInstance != null)
+		{
+			lock (myLock)
+			{
+				var composer = new Composer(isDebug);
+				composer.Compose();
+
+				myInstance ??= new Router(composer);
+			}
+		}
+		return myInstance!;
+	}
 
 	public static void SetDebug(bool isDebug)
 	{
@@ -21,7 +38,7 @@ public static class Bridge
 			request = null;
 		}
 
-		var response = Router.Instance(myIsDebug).RouteRequest(request);
+		var response = Instance(myIsDebug).RouteRequest(request);
 
 		var responseBytes = Encoding.UTF8.GetBytes(response);
 		var responsePtr = Marshal.AllocHGlobal(responseBytes.Length + 1);
