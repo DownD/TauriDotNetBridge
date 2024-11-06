@@ -42,7 +42,7 @@ Add the `TauriDotNetBridge` and `Microsoft.Extensions.DependencyInjection` NuGet
 ```xml
 <ItemGroup>
   <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
-  <PackageReference Include="TauriDotNetBridge" Version="1.7.0" />
+  <PackageReference Include="TauriDotNetBridge" Version="2.0.0" />
 </ItemGroup>
 ```
 
@@ -85,7 +85,7 @@ In `src-tauri/Cargo.toml`, add:
 
 ```yaml
 [dependencies]
-tauri-dotnet-bridge-host = "0.5.0"
+tauri-dotnet-bridge-host = "0.6.0"
 ```
 
 And then configure Tauri in your `main.rs` or `lib.rs` as follows:
