@@ -1,6 +1,5 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -25,13 +24,13 @@ internal class Router
 
     private readonly Composer myComposer;
     private readonly JsonSerializer mySerializer;
-    private readonly ILogger<Router> myLogger;
+    private readonly ILogger myLogger;
 
     public Router(Composer composer)
     {
         myComposer = composer;
 
-        myLogger = myComposer.ServiceProvider!.GetRequiredService<ILogger<Router>>();
+        myLogger = myComposer.ServiceProvider!.GetRequiredService<ILogger>();
         mySerializer = JsonSerializer.Create(myRequestSettings);
     }
 
@@ -74,7 +73,7 @@ internal class Router
 
         if (type == null)
         {
-            myLogger.LogWarning($"No controller found for: '{controller}'");
+            myLogger.Error($"No controller found for: '{controller}'");
             return RouteResponse.Error($"No controller found for: '{controller}'");
         }
 
@@ -84,14 +83,14 @@ internal class Router
 
         if (method == null)
         {
-            myLogger.LogWarning($"No action found for '{action}' in controller '{controller}'");
+            myLogger.Error($"No action found for '{action}' in controller '{controller}'");
             return RouteResponse.Error($"No action found for '{action}' in controller '{controller}'");
         }
 
         var instance = myComposer.ServiceProvider!.GetService(type);
         if (instance == null)
         {
-            myLogger.LogError($"Failed to resolve a controller instance for '{type}.{method}'");
+            myLogger.Error($"Failed to resolve a controller instance for '{type}.{method}'");
             return RouteResponse.Error($"Failed to resolve a controller instance for '{type}.{method}'");
         }
 

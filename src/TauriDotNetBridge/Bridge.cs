@@ -11,7 +11,7 @@ public static class Bridge
 
 	private static Router Instance(bool isDebug)
 	{
-		if (myInstance != null)
+		if (myInstance == null)
 		{
 			lock (myLock)
 			{
