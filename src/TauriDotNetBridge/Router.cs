@@ -65,7 +65,7 @@ internal class Router
     {
         if (requestText is null or "")
         {
-            return SerializeResponse(new RouteResponse() { ErrorMessage = "Input is empty..." });
+            return Serialize(RouteResponse.Error("Request string is empty"));
         }
 
         RouteRequest? request;
@@ -74,42 +74,18 @@ internal class Router
             request = JsonConvert.DeserializeObject<RouteRequest>(requestText, myRequestSettings);
             if (request == null)
             {
-                return SerializeResponse(new RouteResponse() { ErrorMessage = "Failed to parse request JSON" });
+                return Serialize(RouteResponse.Error("Failed to parse request JSON"));
             }
         }
         catch (Exception)
         {
-            return SerializeResponse(new RouteResponse() { ErrorMessage = "Failed to parse request JSON" });
+            return Serialize(RouteResponse.Error("Failed to parse request JSON"));
         }
 
-        try
-        {
-            var response = RouteRequest(request);
-            return SerializeResponse(response);
-        }
-        catch (Exception ex)
-        {
-            return SerializeResponse(new RouteResponse { ErrorMessage = $"Failed to process request: {ex}" });
-        }
+        var response = myActionInvoker.InvokeAction(request.Controller, request.Action, request.Data);
+        return Serialize(response);
     }
 
-    private static string SerializeResponse(RouteResponse? obj) =>
-        obj == null ? string.Empty : JsonConvert.SerializeObject(obj, myResponseSettings);
-
-    private RouteResponse? RouteRequest(RouteRequest routeRequest)
-    {
-        if (routeRequest == null) return RouteResponse.Error("Object RouteRequest is required");
-
-        routeRequest.Controller ??= "Home";
-        routeRequest.Action ??= "Index";
-
-        try
-        {
-            return myActionInvoker.InvokeAction(routeRequest.Controller, routeRequest.Action, routeRequest.Data);
-        }
-        catch (Exception ex)
-        {
-            return RouteResponse.Error($"[{routeRequest.Controller}][{routeRequest.Action}] error: {ex}");
-        }
-    }
+    private static string Serialize(RouteResponse response) =>
+        JsonConvert.SerializeObject(response, myResponseSettings);
 }

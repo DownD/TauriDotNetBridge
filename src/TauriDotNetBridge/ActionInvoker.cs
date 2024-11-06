@@ -23,7 +23,7 @@ internal class ActionInvoker
         mySerializer = JsonSerializer.Create(settings);
     }
 
-    public RouteResponse? InvokeAction(string controller, string action, object? data)
+    public RouteResponse InvokeAction(string controller, string action, object? data)
     {
         var type = myServices.FirstOrDefault(x =>
             (x.ImplementationType?.Name.Equals(controller, StringComparison.OrdinalIgnoreCase) == true ||
@@ -35,34 +35,41 @@ internal class ActionInvoker
         if (type == null)
         {
             myLogger.LogWarning($"No controller found for: '{controller}'");
-            return null;
+            return RouteResponse.Error($"No controller found for: '{controller}'");
         }
 
         var method = type.GetMethods(BindingFlags.Instance | BindingFlags.Public)
             .FirstOrDefault(x => x.Name.Equals(action, StringComparison.OrdinalIgnoreCase)
-                                 && x.GetParameters().Length == 1);
+                                 && x.GetParameters().Length <= 1);
 
         if (method == null)
         {
             myLogger.LogWarning($"No action found for '{action}' in controller '{controller}'");
-            return null;
+            return RouteResponse.Error($"No action found for '{action}' in controller '{controller}'");
         }
 
         var instance = myServiceProvider.GetService(type);
         if (instance == null)
         {
             myLogger.LogError($"Failed to resolve a controller instance for '{type}.{method}'");
-            return null;
+            return RouteResponse.Error($"Failed to resolve a controller instance for '{type}.{method}'");
         }
 
-        if (data is null)
+        try
         {
-            return (RouteResponse?)method.Invoke(instance, null);
+            if (data is null)
+            {
+                return RouteResponse.Ok(method.Invoke(instance, null));
+            }
+            else
+            {
+                var arg = ((JObject)data).ToObject(method.GetParameters().Single().ParameterType, mySerializer);
+                return RouteResponse.Ok(method.Invoke(instance, [arg]));
+            }
         }
-        else
+        catch (Exception ex)
         {
-            var arg = ((JObject)data).ToObject(method.GetParameters().Single().ParameterType, mySerializer);
-            return (RouteResponse?)method.Invoke(instance, [arg]);
+            return RouteResponse.Error(ex);
         }
     }
 }

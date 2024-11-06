@@ -71,7 +71,6 @@ public class LogInInfo
 
 public class HomeController
 {
-    [RouteMethod]
     public RouteResponse Login(LogInInfo loginInfo)
     {
         return RouteResponse.Ok($"User '{loginInfo.User}' logged in successfully");
