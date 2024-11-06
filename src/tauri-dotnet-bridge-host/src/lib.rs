@@ -39,7 +39,7 @@ lazy_static! {
         let instance = context.get_delegate_loader_for_assembly(dll_path).expect("Failed to load DLL");
 
         let set_debug = instance
-            .get_function_with_unmanaged_callers_only::<fn(is_debug: bool)>(
+            .get_function_with_unmanaged_callers_only::<fn(is_debug: i32)>(
                 pdcstr!("TauriDotNetBridge.Bridge, TauriDotNetBridge"),
                 pdcstr!("SetDebug"),
             )

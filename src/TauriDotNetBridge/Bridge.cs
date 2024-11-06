@@ -24,9 +24,10 @@ public static class Bridge
 		return myInstance!;
 	}
 
-	public static void SetDebug(bool isDebug)
+	[UnmanagedCallersOnly]
+	public static void SetDebug(int isDebug)
 	{
-		myIsDebug = isDebug;
+		myIsDebug = isDebug != 0;
 	}
 
 	[UnmanagedCallersOnly]
