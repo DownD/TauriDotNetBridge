@@ -1,4 +1,4 @@
-﻿namespace TauriDotNetBridge.Contracts;
+﻿namespace TauriDotNetBridge;
 
 internal class RouteResponse
 {
