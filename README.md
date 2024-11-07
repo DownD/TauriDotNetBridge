@@ -156,7 +156,19 @@ async function login() {
 }
 ```
 
-Finally, run the app
+Finally, include the DotNet backend in the build process by changing the ```beforeDevCommand`` and ``beforeBuildCommand`` 
+in ``src-tauri\tauri.conf.json`` like this
+
+```json
+{
+  "build": {
+    "beforeDevCommand": "pnpm dev && dotnet build src-dotnet/src-dotnet.sln",
+    "beforeBuildCommand": "pnpm build && dotnet publish -c Release src-dotnet/src-dotnet.sln",
+  }
+}
+```
+
+and then run the application
 
 ```bash
 pnpm run tauri dev
