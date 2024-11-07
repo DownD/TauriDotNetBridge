@@ -162,8 +162,8 @@ in ``src-tauri\tauri.conf.json`` like this
 ```json
 {
   "build": {
-    "beforeDevCommand": "pnpm dev && dotnet build src-dotnet/src-dotnet.sln",
-    "beforeBuildCommand": "pnpm build && dotnet publish -c Release src-dotnet/src-dotnet.sln",
+    "beforeDevCommand": "dotnet build src-dotnet/src-dotnet.sln && pnpm dev",
+    "beforeBuildCommand": "dotnet publish -c Release src-dotnet/src-dotnet.sln && pnpm build",
   }
 }
 ```
