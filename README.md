@@ -163,7 +163,7 @@ in ``src-tauri\tauri.conf.json`` like this
 {
   "build": {
     "beforeDevCommand": "dotnet build src-dotnet/src-dotnet.sln && pnpm dev",
-    "beforeBuildCommand": "dotnet publish -c Release src-dotnet/src-dotnet.sln && pnpm build",
+    "beforeBuildCommand": "dotnet build -c Release src-dotnet/src-dotnet.sln && pnpm build",
   }
 }
 ```
@@ -178,15 +178,7 @@ and enjoy coding a tauri-app with DotNet backend 😊
 
 # Packaging
 
-Make sure the dotnet plugin is built in release
-
-```bash
-cd src-dotnet
-dotnet build -c Release
-cd ..
-```
-
-Then build the tauri packages
+Simply build the tauri package
 
 ```bash
 pnpm run tauri build
