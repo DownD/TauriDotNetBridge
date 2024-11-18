@@ -1,32 +1,11 @@
-<script setup>
-import { ref } from "vue";
-import { invoke } from "@tauri-apps/api/core";
-
-const greetMsg = ref("");
-const name = ref("");
-
-async function greet() {
-  // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-  greetMsg.value = await invoke("greet", { name: name.value });
-}
-</script>
-
 <template>
   <main class="container">
-    <h1>Welcome to Tauri + Vue</h1>
+    <h1>Welcome to Tauri + C#</h1>
 
     <div class="row">
-      <a href="https://vitejs.dev" target="_blank">
-        <img src="/vite.svg" class="logo vite" alt="Vite logo" />
-      </a>
-      <a href="https://tauri.app" target="_blank">
-        <img src="/tauri.svg" class="logo tauri" alt="Tauri logo" />
-      </a>
-      <a href="https://vuejs.org/" target="_blank">
-        <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-      </a>
+      <img src="/tauri.svg" class="logo tauri" alt="Tauri logo" />
+      <img src="/csharp.svg" class="logo csharp" alt="C# logo" />
     </div>
-    <p>Click on the Tauri, Vite, and Vue logos to learn more.</p>
 
     <form class="row" @submit.prevent="greet">
       <input id="greet-input" v-model="name" placeholder="Enter a name..." />
@@ -36,6 +15,24 @@ async function greet() {
   </main>
 </template>
 
+<script setup>
+import { ref } from "vue";
+import { invoke } from "@tauri-apps/api/core";
+
+const greetMsg = ref("");
+const name = ref("");
+
+async function greet() {
+  const response = await invoke('dotnet_request', {
+    request: JSON.stringify({ controller: 'home', action: 'greet', data: name.value })
+  })
+  console.log(response)
+  greetMsg.value = JSON.parse(response).data
+}
+
+
+</script>
+
 <style scoped>
 .logo.vite:hover {
   filter: drop-shadow(0 0 2em #747bff);
@@ -44,7 +41,6 @@ async function greet() {
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #249b73);
 }
-
 </style>
 <style>
 :root {
@@ -123,6 +119,7 @@ button {
 button:hover {
   border-color: #396cd8;
 }
+
 button:active {
   border-color: #396cd8;
   background-color: #e8e8e8;
@@ -152,9 +149,9 @@ button {
     color: #ffffff;
     background-color: #0f0f0f98;
   }
+
   button:active {
     background-color: #0f0f0f69;
   }
 }
-
 </style>

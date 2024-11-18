@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "identifier": "com.tauri-dotnet-sample.app",
   "build": {
-    "beforeDevCommand": "pnpm dev",
+    "beforeDevCommand": "dotnet build src-dotnet/Sample.TauriPlugIn/Sample.TauriPlugIn.csproj && pnpm dev",
+    "beforeBuildCommand": "dotnet publish -c Release src-dotnet/Sample.TauriPlugIn/Sample.TauriPlugIn.csproj && pnpm build",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "pnpm build",
     "frontendDist": "../dist"
   },
   "app": {

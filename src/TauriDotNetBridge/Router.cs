@@ -104,6 +104,10 @@ internal class Router : IEventPublisher
             {
                 return RouteResponse.Ok(method.Invoke(instance, null));
             }
+            else if (data is string)
+            {
+                return RouteResponse.Ok(method.Invoke(instance, [data]));
+            }
             else
             {
                 var arg = ((JObject)data).ToObject(method.GetParameters().Single().ParameterType, mySerializer);
