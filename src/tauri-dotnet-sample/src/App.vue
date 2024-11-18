@@ -12,6 +12,10 @@
       <button type="submit">Greet</button>
     </form>
     <p>{{ greetMsg }}</p>
+    <div>
+      <div style="font-weight: bold;margin-bottom: 10px;">News Feed</div>
+      <div v-for="item in feed">{{ item }}</div>
+    </div>
   </main>
 </template>
 
@@ -22,6 +26,7 @@ import { listen } from '@tauri-apps/api/event';
 
 const greetMsg = ref("");
 const name = ref("");
+const feed = ref([]);
 
 async function greet() {
   const response = await invoke('dotnet_request', {
@@ -33,6 +38,7 @@ async function greet() {
 
 listen('news-feed', (event) => {
   console.log(`news-feed: ${event.payload}`);
+  feed.value.push(JSON.parse(event.payload));
 });
 </script>
 

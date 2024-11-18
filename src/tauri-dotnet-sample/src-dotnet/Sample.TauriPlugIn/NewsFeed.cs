@@ -11,8 +11,8 @@ public class NewsFeed(IEventPublisher publisher) : IHostedService
         using var timer = new PeriodicTimer(TimeSpan.FromSeconds(15));
         while (await timer.WaitForNextTickAsync(cancellationToken))
         {
-            Console.WriteLine($"News at {DateTime.Now}");
-            publisher.Publish("news-feed", $"News at {DateTime.Now}");
+            Console.WriteLine($"{DateTime.Now}|Publishing news");
+            publisher.Publish("news-feed", $"News from C# at {DateTime.Now}");
         }
     }
 }

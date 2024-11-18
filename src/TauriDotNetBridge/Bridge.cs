@@ -48,10 +48,10 @@ public static class Bridge
 
 		var response = Instance(myIsDebug).RouteRequest(request);
 
-		return CreateSharableStringPointer(response);
+		return TransferOwnershipToRust(response);
 	}
 
-	private static unsafe byte* CreateSharableStringPointer(string str)
+	private static unsafe byte* TransferOwnershipToRust(string str)
 	{
 		var bytes = Encoding.UTF8.GetBytes(str);
 		var pointer = Marshal.AllocHGlobal(bytes.Length + 1);
@@ -73,10 +73,8 @@ public static class Bridge
 
 	public static unsafe void Emit(string eventName, string payload)
 	{
-		Console.WriteLine("emit");
-
-		var eventNamePtr = CreateSharableStringPointer(eventName);
-		var payloadPtr = CreateSharableStringPointer(payload);
+		var eventNamePtr = TransferOwnershipToRust(eventName);
+		var payloadPtr = TransferOwnershipToRust(payload);
 
 		myEmitCallback?.Invoke(eventNamePtr, payloadPtr);
 	}
