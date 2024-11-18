@@ -1,7 +1,8 @@
 use lazy_static::lazy_static;
 use netcorehost::{hostfxr::AssemblyDelegateLoader, nethost, pdcstr, pdcstring::PdCString};
 use std::env;
-use std::ffi::{c_char, CString};
+use std::ffi::{c_char, c_void, CString};
+use std::sync::Mutex;
 
 lazy_static! {
     static ref ASM: AssemblyDelegateLoader = {
@@ -49,6 +50,8 @@ lazy_static! {
 
         instance
     };
+
+    static ref EMIT_CALLBACK: Mutex<Option<fn(&str, &str)>> = Mutex::new(None);
 }
 
 pub fn process_request(request: &str) -> String {
@@ -66,4 +69,31 @@ pub fn process_request(request: &str) -> String {
     let response = unsafe { CString::from_raw(response_ptr) };
 
     format!("{}", response.to_string_lossy())
+}
+
+pub fn register_emit(callback: fn(&str, &str)) {
+    *EMIT_CALLBACK.lock().unwrap() = Some(callback);
+
+    extern "C" fn emit_wrapper(event_name_ptr: *const c_char, payload_ptr: *const c_char) {
+        let event_name = unsafe { CString::from_raw(event_name_ptr as *mut c_char) }
+            .to_string_lossy()
+            .into_owned();
+
+        let payload = unsafe { CString::from_raw(payload_ptr as *mut c_char) }
+            .to_string_lossy()
+            .into_owned();
+
+        if let Some(callback) = &*EMIT_CALLBACK.lock().unwrap() {
+            callback(&event_name, &payload);
+        }
+    }
+
+    let register_callback = ASM
+        .get_function_with_unmanaged_callers_only::<fn(*const c_void)>(
+            pdcstr!("TauriDotNetBridge.Bridge, TauriDotNetBridge"),
+            pdcstr!("RegisterEmitCallback"),
+        )
+        .expect("Failed to get RegisterRustCallback");
+
+    register_callback(emit_wrapper as *const c_void);
 }

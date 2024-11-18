@@ -8,6 +8,7 @@ public static class Bridge
 	private static bool myIsDebug;
 	private static Router? myInstance;
 	private static readonly object myLock = new();
+	private static Action<string, string>? myEmitCallback;
 
 	private static Router Instance(bool isDebug)
 	{
@@ -48,5 +49,16 @@ public static class Bridge
 		Marshal.WriteByte(responsePtr, responseBytes.Length, 0);
 
 		return (byte*)responsePtr;
+	}
+
+	[UnmanagedCallersOnly]
+	public static void RegisterEmitCallback(IntPtr callbackPtr)
+	{
+		myEmitCallback = Marshal.GetDelegateForFunctionPointer<Action<string, string>>(callbackPtr);
+	}
+
+	public static void Emit(string eventName, string payload)
+	{
+		myEmitCallback?.Invoke(eventName, payload);
 	}
 }

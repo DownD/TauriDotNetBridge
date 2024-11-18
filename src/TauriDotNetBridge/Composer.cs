@@ -16,12 +16,11 @@ internal class Composer
     }
 
     public IServiceCollection Services { get; private set; }
-    public IServiceProvider? ServiceProvider { get; private set; }
 
     public void Compose()
     {
-        ServiceProvider = Services.BuildServiceProvider();
-        var logger = ServiceProvider.GetRequiredService<ILogger>();
+        var serviceProvider = Services.BuildServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger>();
 
         var assemblies = Directory.GetFiles(DotNetHome, "*.TauriPlugIn.dll");
 
@@ -33,8 +32,6 @@ internal class Composer
         {
             Load(logger, path);
         }
-
-        ServiceProvider = Services.BuildServiceProvider();
 
         Assembly? OnAssemblyResolve(object? _, ResolveEventArgs args)
         {

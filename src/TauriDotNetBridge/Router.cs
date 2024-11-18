@@ -7,7 +7,7 @@ using TauriDotNetBridge.Contracts;
 
 namespace TauriDotNetBridge;
 
-internal class Router
+internal class Router : IEventPublisher
 {
     private static readonly JsonSerializerSettings myResponseSettings = new()
     {
@@ -25,12 +25,16 @@ internal class Router
     private readonly Composer myComposer;
     private readonly JsonSerializer mySerializer;
     private readonly ILogger myLogger;
+    private readonly IServiceProvider myServiceProvider;
 
     public Router(Composer composer)
     {
         myComposer = composer;
 
-        myLogger = myComposer.ServiceProvider!.GetRequiredService<ILogger>();
+        myComposer.Services.AddSingleton<IEventPublisher>(this);
+        myServiceProvider = myComposer.Services.BuildServiceProvider();
+        
+        myLogger = myServiceProvider.GetRequiredService<ILogger>();
         mySerializer = JsonSerializer.Create(myRequestSettings);
     }
 
@@ -87,7 +91,7 @@ internal class Router
             return RouteResponse.Error($"No action found for '{action}' in controller '{controller}'");
         }
 
-        var instance = myComposer.ServiceProvider!.GetService(type);
+        var instance = myServiceProvider.GetService(type);
         if (instance == null)
         {
             myLogger.Error($"Failed to resolve a controller instance for '{type}.{method}'");
@@ -111,4 +115,7 @@ internal class Router
             return RouteResponse.Error(ex);
         }
     }
+
+    public void Publish(string name, object payload) =>
+        Bridge.Emit(name, JsonConvert.SerializeObject(payload, myResponseSettings));
 }
