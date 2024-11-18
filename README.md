@@ -258,7 +258,9 @@ public class PlugIn : IPlugIn
 
 A sample project can be found here: https://github.com/plainionist/TauriDotNetBridge/tree/main/src/tauri-dotnet-sample
 
-Video tutorial: https://youtu.be/ZRX7jo6wb2o
+Video tutorial: 
+
+[![Is THIS the Future of .NET Desktop Apps? | Tauri & C#](https://img.youtube.com/vi/ZRX7jo6wb2o/0.jpg)](https://youtu.be/ZRX7jo6wb2o)
 
 # Credits
 
