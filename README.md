@@ -42,7 +42,7 @@ Add the `TauriDotNetBridge` and `Microsoft.Extensions.DependencyInjection` NuGet
 ```xml
 <ItemGroup>
   <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
-  <PackageReference Include="TauriDotNetBridge" Version="2.0.0" />
+  <PackageReference Include="TauriDotNetBridge" Version="2.2.0" />
 </ItemGroup>
 ```
 
@@ -84,7 +84,7 @@ In `src-tauri/Cargo.toml`, add:
 
 ```yaml
 [dependencies]
-tauri-dotnet-bridge-host = "0.7.0"
+tauri-dotnet-bridge-host = "0.8.0"
 ```
 
 And then configure Tauri in your `main.rs` or `lib.rs` as follows:
@@ -186,9 +186,81 @@ pnpm run tauri build
 
 To redistribute the package you can now copy the generated rust executable and the "dotnet" folder.
 
+# Events
+
+To publish events from C# to the frontend, first register the tauri dotnet bridge event support like this
+
+```rust
+    tauri::Builder::default()
+        .plugin(tauri_plugin_shell::init())
+        .invoke_handler(tauri::generate_handler![dotnet_request])
+        .setup(|app| {
+            let app_handle = app.handle().clone();
+            tauri_dotnet_bridge_host::register_emit(move |event_name, payload| {
+                app_handle
+                    .emit(event_name, payload)
+                    .expect(&format!("Failed to emit event {}", event_name));
+            });
+            Ok(())
+        })
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
+```
+
+Then in C# import ``IEventPublisher`` into any controller
+
+```csharp
+using TauriDotNetBridge.Contracts;
+
+public class HomeController(IEventPublisher publisher)
+{
+    public void SomeCommand()
+    {
+          publisher.Publish("event-name", $"any payload");
+    }
+}
+```
+
+Use ```IHostedService``` to implement an active service which can publish events any time
+
+```csharp
+using TauriDotNetBridge.Contracts;
+
+public class NewsFeed(IEventPublisher publisher) : IHostedService
+{
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        Console.WriteLine($"News feed started");
+
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(15));
+        while (await timer.WaitForNextTickAsync(cancellationToken))
+        {
+            Console.WriteLine($"{DateTime.Now}|Publishing news");
+            publisher.Publish("news-feed", $"News from C# at {DateTime.Now}");
+        }
+    }
+}
+```
+
+Make sure you register it using ``IHostedService`` interface
+
+```csharp
+public class PlugIn : IPlugIn
+{
+    public void Initialize(IServiceCollection services)
+    {
+        services.AddSingleton<IHostedService, NewsFeed>();
+    }
+}
+```
+
 # Sample project
 
-A sample project can be found here: https://github.com/plainionist/TauriNET
+A sample project can be found here: https://github.com/plainionist/TauriDotNetBridge/tree/main/src/tauri-dotnet-sample
+
+Video tutorial:
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/ZRX7jo6wb2o?si=n0HE8r_V_QyU_WJf" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 # Credits
 

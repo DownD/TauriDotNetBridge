@@ -14,8 +14,8 @@
 
   <PropertyGroup>
     <PackageId>TauriDotNetBridge</PackageId>
-    <PackageVersion>2.1.0.0</PackageVersion>
-    <Version>2.1.0</Version>
+    <PackageVersion>2.2.0.0</PackageVersion>
+    <Version>2.2.0</Version>
     <Authors>plainionist</Authors>
     <Description>Enables implementation of Tauri commands in DotNet</Description>
     <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
