@@ -8,7 +8,11 @@ public static class Bridge
 	private static bool myIsDebug;
 	private static Router? myInstance;
 	private static readonly object myLock = new();
-	private static Action<string, string>? myEmitCallback;
+
+	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+	public unsafe delegate void EmitCallback(byte* eventName, byte* payload);
+
+	private static EmitCallback? myEmitCallback;
 
 	private static Router Instance(bool isDebug)
 	{
@@ -17,9 +21,11 @@ public static class Bridge
 			lock (myLock)
 			{
 				var composer = new Composer(isDebug);
-				composer.Compose();
+				composer.LoadPlugIns();
 
 				myInstance ??= new Router(composer);
+
+				composer.StartHostedServices();
 			}
 		}
 		return myInstance!;
@@ -42,23 +48,36 @@ public static class Bridge
 
 		var response = Instance(myIsDebug).RouteRequest(request);
 
-		var responseBytes = Encoding.UTF8.GetBytes(response);
-		var responsePtr = Marshal.AllocHGlobal(responseBytes.Length + 1);
+		return CreateSharableStringPointer(response);
+	}
 
-		Marshal.Copy(responseBytes, 0, responsePtr, responseBytes.Length);
-		Marshal.WriteByte(responsePtr, responseBytes.Length, 0);
+	private static unsafe byte* CreateSharableStringPointer(string str)
+	{
+		var bytes = Encoding.UTF8.GetBytes(str);
+		var pointer = Marshal.AllocHGlobal(bytes.Length + 1);
 
-		return (byte*)responsePtr;
+		Marshal.Copy(bytes, 0, pointer, bytes.Length);
+		Marshal.WriteByte(pointer, bytes.Length, 0);
+
+		return (byte*)pointer;
 	}
 
 	[UnmanagedCallersOnly]
 	public static void RegisterEmitCallback(IntPtr callbackPtr)
 	{
-		myEmitCallback = Marshal.GetDelegateForFunctionPointer<Action<string, string>>(callbackPtr);
+		// ensure hosted services are started
+		Instance(myIsDebug);
+
+		myEmitCallback = Marshal.GetDelegateForFunctionPointer<EmitCallback>(callbackPtr);
 	}
 
-	public static void Emit(string eventName, string payload)
+	public static unsafe void Emit(string eventName, string payload)
 	{
-		myEmitCallback?.Invoke(eventName, payload);
+		Console.WriteLine("emit");
+
+		var eventNamePtr = CreateSharableStringPointer(eventName);
+		var payloadPtr = CreateSharableStringPointer(payload);
+
+		myEmitCallback?.Invoke(eventNamePtr, payloadPtr);
 	}
 }

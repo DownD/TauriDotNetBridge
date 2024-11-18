@@ -50,7 +50,8 @@ lazy_static! {
 
         instance
     };
-
+    
+    // static ref EMIT_CALLBACK: Mutex<Option<Box<dyn Fn(&str, &str) + Send + Sync>>> = Mutex::new(None);
     static ref EMIT_CALLBACK: Mutex<Option<fn(&str, &str)>> = Mutex::new(None);
 }
 
@@ -72,16 +73,17 @@ pub fn process_request(request: &str) -> String {
 }
 
 pub fn register_emit(callback: fn(&str, &str)) {
+// pub fn register_emit<F>(callback: F)
+// where
+//     F: Fn(&str, &str) + 'static + Send + Sync,
+// {
+    // *EMIT_CALLBACK.lock().unwrap() = Some(Box::new(callback));
     *EMIT_CALLBACK.lock().unwrap() = Some(callback);
 
     extern "C" fn emit_wrapper(event_name_ptr: *const c_char, payload_ptr: *const c_char) {
-        let event_name = unsafe { CString::from_raw(event_name_ptr as *mut c_char) }
-            .to_string_lossy()
-            .into_owned();
+        let event_name = unsafe { CString::from_raw(event_name_ptr as *mut c_char) }.to_string_lossy().into_owned();
 
-        let payload = unsafe { CString::from_raw(payload_ptr as *mut c_char) }
-            .to_string_lossy()
-            .into_owned();
+        let payload = unsafe { CString::from_raw(payload_ptr as *mut c_char) }.to_string_lossy().into_owned();
 
         if let Some(callback) = &*EMIT_CALLBACK.lock().unwrap() {
             callback(&event_name, &payload);

@@ -17,7 +17,7 @@ internal class Composer
 
     public IServiceCollection Services { get; private set; }
 
-    public void Compose()
+    public void LoadPlugIns()
     {
         var serviceProvider = Services.BuildServiceProvider();
         var logger = serviceProvider.GetRequiredService<ILogger>();
@@ -85,5 +85,17 @@ internal class Composer
         fs.Close();
 
         return buffer;
+    }
+
+    public void StartHostedServices()
+    {
+        var serviceProvider = Services.BuildServiceProvider();
+        var logger = serviceProvider.GetRequiredService<ILogger>();
+
+        foreach (var service in serviceProvider.GetServices<IHostedService>())
+        {
+            logger.Debug($"Starting {service.GetType().Name}");
+            service.StartAsync(CancellationToken.None);
+        }
     }
 }

@@ -8,5 +8,6 @@ public class PlugIn : IPlugIn
     public void Initialize(IServiceCollection services)
     {
         services.AddSingleton<HomeController>();
+        services.AddSingleton<IHostedService, NewsFeed>();
     }
 }

@@ -18,6 +18,7 @@
 <script setup>
 import { ref } from "vue";
 import { invoke } from "@tauri-apps/api/core";
+import { listen } from '@tauri-apps/api/event';
 
 const greetMsg = ref("");
 const name = ref("");
@@ -26,11 +27,13 @@ async function greet() {
   const response = await invoke('dotnet_request', {
     request: JSON.stringify({ controller: 'home', action: 'greet', data: name.value })
   })
-  console.log(response)
+  console.log(`response:: ${response}`);
   greetMsg.value = JSON.parse(response).data
 }
 
-
+listen('news-feed', (event) => {
+  console.log(`news-feed: ${event.payload}`);
+});
 </script>
 
 <style scoped>
