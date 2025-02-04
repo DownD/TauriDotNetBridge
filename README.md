@@ -178,13 +178,27 @@ and enjoy coding a tauri-app with DotNet backend 😊
 
 # Packaging
 
-Simply build the tauri package
+To include the ``dotnet`` folder during packaging add the following to your ``tauri.conf.json``
+
+```json
+{
+  ...
+  "bundle": {
+    ...
+    "resources": {
+      "./target/Release/dotnet/*" : "dotnet/"
+    }
+  }
+}
+```
+
+Then simply run
 
 ```bash
 pnpm run tauri build
 ```
 
-To redistribute the package you can now copy the generated rust executable and the "dotnet" folder.
+To redistribute the package you can now copy the generated rust executable and the ``dotnet`` folder.
 
 # Events
 
