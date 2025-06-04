@@ -8,5 +8,5 @@ license = "BSD-3-Clause"
 repository = "https://github.com/plainionist/TauriDotNetBridge"
 
 [dependencies]
-netcorehost = "0.17.0"
+netcorehost = "0.18.0"
 lazy_static = "1.4"
